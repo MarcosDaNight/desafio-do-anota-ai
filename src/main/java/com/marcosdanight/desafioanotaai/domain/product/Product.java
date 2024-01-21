@@ -1,6 +1,6 @@
 package com.marcosdanight.desafioanotaai.domain.product;
 
-import jdk.jfr.Category;
+import com.marcosdanight.desafioanotaai.domain.category.Category;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +30,5 @@ public class Product {
         this.description = productData.description();
         this.ownerId = productData.ownerId();
         this.price = productData.price();
-        this.category = (Category) productData.category();
     }
 }
