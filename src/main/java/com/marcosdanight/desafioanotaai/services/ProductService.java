@@ -6,6 +6,8 @@ import com.marcosdanight.desafioanotaai.domain.product.Product;
 import com.marcosdanight.desafioanotaai.domain.product.ProductDTO;
 import com.marcosdanight.desafioanotaai.domain.product.execptions.ProductNotFoundExecption;
 import com.marcosdanight.desafioanotaai.repository.ProductRepository;
+import com.marcosdanight.desafioanotaai.services.aws.AwsSNSService;
+import com.marcosdanight.desafioanotaai.services.aws.MessageDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,21 +15,30 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    private CategoryService categoryService;
-    private ProductRepository repository;
+    private final CategoryService categoryService;
+    private final ProductRepository repository;
 
-    public ProductService(ProductRepository repository, CategoryService categoryService) {
+    private final AwsSNSService snsService;
+
+    public ProductService(ProductRepository repository, CategoryService categoryService, AwsSNSService snsService) {
         this.categoryService = categoryService;
         this.repository = repository;
+        this.snsService = snsService;
     }
 
 
     public Product insert(ProductDTO productData) {
         Category category = this.categoryService.getById(productData.categoryId())
                 .orElseThrow(CategoryNotFoundExecption::new);
+
         Product newProduct = new Product(productData);
+
         newProduct.setCategory(category);
+
         repository.save(newProduct);
+
+        this.snsService.publish(new MessageDTO(newProduct.getOwnerId()));
+
         return newProduct;
     }
 
@@ -50,6 +61,8 @@ public class ProductService {
 
 
         this.repository.save(product);
+
+        this.snsService.publish(new MessageDTO(product.getOwnerId()));
 
         return product;
     }
