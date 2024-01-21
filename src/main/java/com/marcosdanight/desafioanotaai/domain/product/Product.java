@@ -24,4 +24,12 @@ public class Product {
     private Integer price;
 
     private Category category;
+
+    public Product(ProductDTO productData) {
+        this.title = productData.title();
+        this.description = productData.description();
+        this.ownerId = productData.ownerId();
+        this.price = productData.price();
+        this.category = (Category) productData.category();
+    }
 }

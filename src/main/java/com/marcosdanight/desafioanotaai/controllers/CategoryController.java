@@ -2,6 +2,7 @@ package com.marcosdanight.desafioanotaai.controllers;
 
 import com.marcosdanight.desafioanotaai.domain.category.Category;
 import com.marcosdanight.desafioanotaai.domain.category.CategoryDTO;
+import com.marcosdanight.desafioanotaai.domain.product.Product;
 import com.marcosdanight.desafioanotaai.services.CategoryService;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
