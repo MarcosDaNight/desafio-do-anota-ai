@@ -1,7 +1,6 @@
 package com.marcosdanight.desafioanotaai.services;
 
 import com.marcosdanight.desafioanotaai.domain.category.Category;
-import com.marcosdanight.desafioanotaai.domain.category.CategoryDTO;
 import com.marcosdanight.desafioanotaai.domain.category.execptions.CategoryNotFoundExecption;
 import com.marcosdanight.desafioanotaai.domain.product.Product;
 import com.marcosdanight.desafioanotaai.domain.product.ProductDTO;
@@ -14,15 +13,20 @@ import java.util.List;
 @Service
 public class ProductService {
 
+    private CategoryService categoryService;
     private ProductRepository repository;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductRepository repository, CategoryService categoryService) {
+        this.categoryService = categoryService;
         this.repository = repository;
     }
 
 
     public Product insert(ProductDTO productData) {
+        Category category = this.categoryService.getById(productData.categoryId())
+                .orElseThrow(CategoryNotFoundExecption::new);
         Product newProduct = new Product(productData);
+        newProduct.setCategory(category);
         repository.save(newProduct);
         return newProduct;
     }
@@ -36,8 +40,13 @@ public class ProductService {
         Product product = this.repository.findById(id)
                 .orElseThrow(ProductNotFoundExecption::new);
 
+        this.categoryService.getById(productData.categoryId())
+                .ifPresent(product::setCategory);
+
         if (!productData.title().isEmpty()) product.setTitle(productData.title());
         if (!productData.description().isEmpty()) product.setDescription(productData.description());
+        if (!(productData.price() == null)) product.setPrice(product.getPrice());
+
 
         this.repository.save(product);
 
